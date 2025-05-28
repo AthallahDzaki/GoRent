@@ -1,0 +1,29 @@
+{
+    // 🚫 Hindari monitoring folder besar
+    "files.watcherExclude": {
+      "**/node_modules/**": true,
+      "**/dist/**": true,
+      "**/build/**": true,
+      "**/.git/**": true
+    },
+  
+    // 👁️ Jangan tampilkan folder besar di sidebar
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/build": true
+    },
+  
+    // 🧠 Batasi fitur language server
+    "typescript.tsserver.maxTsServerMemory": 1024,
+    "javascript.suggest.enabled": true,
+  
+    // 🧩 Nonaktifkan fitur tidak penting untuk proyek kecil
+    "editor.codeLens": false,
+    "editor.parameterHints.enabled": false,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+  
+    // 🧱 Preview editor agar tidak membuka banyak tab
+    "workbench.editor.enablePreview": true,
+  }
+  

@@ -1,0 +1,15 @@
+GoRent/
+├── src/
+│   ├── config/            # Konfigurasi database, env, logger
+│   ├── routes/            # File routing Express
+│   ├── controllers/       # Fungsi-fungsi untuk menangani request
+│   ├── services/          # Logika bisnis utama
+│   ├── middlewares/       # Middleware auth, logger, errorHandler
+│   ├── utils/             # Helper functions (misal: hash, JWT, dll)
+│   ├── app.ts             # Setup Express, middlewares, routes
+│   └── server.ts          # Entry point (jalankan app.listen)
+│
+├── generated/             # Prisma client (jika pakai output custom)
+├── .env                   # Variabel lingkungan
+├── package.json
+└── tsconfig.json          # Jika pakai TypeScript

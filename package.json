@@ -1,0 +1,40 @@
+{
+  "dependencies": {
+    "@prisma/client": "^6.8.2",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "joi": "^17.13.3"
+  },
+  "name": "gorent",
+  "version": "1.0.0",
+  "description": "Backend for Renting Vehicle",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js --watch",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AthallahDzaki/GoRent.git"
+  },
+  "keywords": [
+    "expressjs",
+    "nodejs",
+    "prisma",
+    "mocha"
+  ],
+  "author": "AthallahDzaki, PanduRidho, Bramantyo, Khilmi",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/AthallahDzaki/GoRent/issues"
+  },
+  "homepage": "https://github.com/AthallahDzaki/GoRent#readme",
+  "devDependencies": {
+    "chai": "^5.2.0",
+    "mocha": "^11.5.0",
+    "prisma": "^6.8.2",
+    "supertest": "^7.1.1"
+  },
+  "type": "module"
+}
