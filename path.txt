@@ -13,3 +13,5 @@ GoRent/
 ├── .env                   # Variabel lingkungan
 ├── package.json
 └── tsconfig.json          # Jika pakai TypeScript
+
+tes
