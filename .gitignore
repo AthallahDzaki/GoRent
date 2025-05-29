@@ -135,6 +135,15 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-/src/generated/prisma
+# npm package-lock files
+package-lock.json
+# pnpm lockfile
+pnpm-lock.yaml
+# yarn lockfile
+yarn.lock
+# Bun lockfile
+bun.lockb
+# Bun cache
+.bun
 
 meta.bat
