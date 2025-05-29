@@ -13,9 +13,71 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  customer
+  admin
+}
+
+enum VehicleType {
+  car
+  motorcycle
+}
+
+enum RentalStatus {
+  booked
+  ongoing
+  completed
+  cancelled
+}
+
+enum PaymentMethod {
+  cash
+  credit_card
+  ewallet
+}
+
+model Payment {
+  id       Int           @id @default(autoincrement())
+  rental   Rental        @relation(fields: [rentalId], references: [id])
+  rentalId Int
+  method   PaymentMethod // 'cash', 'credit_card', 'ewallet', dll
+  amount   Float
+  paidAt   DateTime
+}
+
+model Rental {
+  id         Int          @id @default(autoincrement())
+  user       User         @relation(fields: [userId], references: [id])
+  userId     Int
+  vehicle    Vehicle      @relation(fields: [vehicleId], references: [id])
+  vehicleId  Int
+  startDate  DateTime
+  endDate    DateTime
+  totalPrice Float
+  status     RentalStatus // 'booked', 'ongoing', 'completed', 'cancelled'
+  createdAt  DateTime     @default(now())
+  Payment    Payment[]
+}
+
+model Vehicle {
+  id           Int         @id @default(autoincrement())
+  name         String // contoh: "Toyota Avanza"
+  type         VehicleType // contoh: "car", "motorcycle"
+  licensePlate String      @unique
+  brand        String
+  year         Int
+  isAvailable  Boolean     @default(true)
+  pricePerDay  Float
+  rentals      Rental[]
+  createdAt    DateTime    @default(now())
+}
+
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
-  password String
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(customer) // 'customer', 'admin'
+  rentals   Rental[]
+  createdAt DateTime @default(now())
 }
