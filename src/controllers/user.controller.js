@@ -5,7 +5,13 @@ export const getAllUsers = async (req, res) => {
   res.json(users);
 }
 
-export const createUser = async (req, res) => {
-  const user = await UserService.create(req.body)
-  res.status(201).json(user);
+export const getUserProfile = async (req, res) => {
+  const userId = req.user.id; // Assuming user ID is stored in req.user
+  const user = await UserService.findById(userId);
+  
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  
+  res.json(user);
 }

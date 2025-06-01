@@ -1,5 +1,4 @@
-import { register, login } from '../services/auth.service.js';
-import { registerSchema, loginSchema } from '../validators/auth.validator.js';
+import { register, login, refreshAccessToken } from '../services/auth.service.js';
 
 export const registerUser = async (req, res) => {
   try {
@@ -18,5 +17,24 @@ export const loginUser = async (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+};
+
+export const logoutUser = async (req, res) => {
+  try {
+    // Implementasi logout (blacklist token)
+    res.json({ message: 'Logged out successfully' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+export const refreshToken = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    const result = await refreshAccessToken(refreshToken);
+    res.json(result);
+  } catch (err) {
+    res.status(401).json({ error: err.message });
   }
 };

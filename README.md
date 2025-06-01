@@ -17,6 +17,15 @@ GoRent adalah sebuah REST API yang dirancang untuk memudahkan proses penyewaan k
 - **Autentikasi:** JWT (JSON Web Token)
 - **Dokumentasi:** Swagger & Postman
 
+## Progress
+
+- [ ] Autentikasi Pengguna
+- [ ] Pencarian Kendaraan
+- [ ] Pemesanan Kendaraan
+- [ ] Manajemen Penyewaan
+- [ ] Dokumentasi API
+- [ ] Pengujian Unit & Integrasi
+
 ## Cara Penggunaan
 
 1. Clone repository ini.
