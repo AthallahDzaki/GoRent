@@ -23,9 +23,9 @@ console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === "development") {
     app.use(
         morgan(
-            ":id :method :url :status :response-time ms - :res[content-length] - :res[content-type] - "+
-            ":req[user-agent] - :req[accept] - :req[host] - :req[origin] - :req[referer] - :req[content-length] - "+
-            ":req[content-type]"
+            ":id :method :url :status :response-time ms - :res[content-length] - :res[content-type] - " +
+                ":req[user-agent] - :req[accept] - :req[host] - :req[origin] - :req[referer] - :req[content-length] - " +
+                ":req[content-type]"
         )
     );
 }
@@ -33,7 +33,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", routes);
 app.get("/", (req, res) => {
-    res.send("All systems operational");
+    res.json({
+        message: "Welcome to GoRent API",
+        version: "1.0.0",
+    });
 });
 
 export default app;

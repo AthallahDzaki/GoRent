@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,71 +7,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  customer
-  admin
+model payment {
+  id       Int            @id @default(autoincrement())
+  rentalId Int
+  method   payment_method
+  amount   Float
+  paidAt   DateTime
+  rental   rental         @relation(fields: [rentalId], references: [id], map: "Payment_rentalId_fkey")
+
+  @@index([rentalId], map: "Payment_rentalId_fkey")
 }
 
-enum VehicleType {
-  car
-  motorcycle
+model rental {
+  id         Int           @id @default(autoincrement())
+  userId     Int
+  vehicleId  Int
+  startDate  DateTime
+  endDate    DateTime
+  totalPrice Float
+  status     rental_status
+  createdAt  DateTime      @default(now())
+  payment    payment[]
+  user       user          @relation(fields: [userId], references: [id], map: "Rental_userId_fkey")
+  vehicle    vehicle       @relation(fields: [vehicleId], references: [id], map: "Rental_vehicleId_fkey")
+
+  @@index([userId], map: "Rental_userId_fkey")
+  @@index([vehicleId], map: "Rental_vehicleId_fkey")
 }
 
-enum RentalStatus {
-  booked
-  ongoing
-  completed
-  cancelled
+model user {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique(map: "User_email_key")
+  password  String
+  role      user_role @default(customer)
+  createdAt DateTime  @default(now())
+  rental    rental[]
 }
 
-enum PaymentMethod {
+model vehicle {
+  id           Int          @id @default(autoincrement())
+  name         String
+  licensePlate String       @unique(map: "Vehicle_licensePlate_key")
+  brand        String
+  year         Int
+  isAvailable  Boolean      @default(true)
+  pricePerDay  Float
+  createdAt    DateTime     @default(now())
+  rental       rental[]
+}
+
+enum payment_method {
   cash
   credit_card
   ewallet
 }
 
-model Payment {
-  id       Int           @id @default(autoincrement())
-  rental   Rental        @relation(fields: [rentalId], references: [id])
-  rentalId Int
-  method   PaymentMethod // 'cash', 'credit_card', 'ewallet', dll
-  amount   Float
-  paidAt   DateTime
+enum user_role {
+  customer
+  admin
 }
 
-model Rental {
-  id         Int          @id @default(autoincrement())
-  user       User         @relation(fields: [userId], references: [id])
-  userId     Int
-  vehicle    Vehicle      @relation(fields: [vehicleId], references: [id])
-  vehicleId  Int
-  startDate  DateTime
-  endDate    DateTime
-  totalPrice Float
-  status     RentalStatus // 'booked', 'ongoing', 'completed', 'cancelled'
-  createdAt  DateTime     @default(now())
-  Payment    Payment[]
-}
-
-model Vehicle {
-  id           Int         @id @default(autoincrement())
-  name         String // contoh: "Toyota Avanza"
-  type         VehicleType // contoh: "car", "motorcycle"
-  licensePlate String      @unique
-  brand        String
-  year         Int
-  isAvailable  Boolean     @default(true)
-  pricePerDay  Float
-  rentals      Rental[]
-  createdAt    DateTime    @default(now())
-}
-
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  role      UserRole @default(customer) // 'customer', 'admin'
-  rentals   Rental[]
-  createdAt DateTime @default(now())
+enum rental_status {
+  booked
+  ongoing
+  completed
+  cancelled
 }
