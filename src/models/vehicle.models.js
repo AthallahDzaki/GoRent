@@ -1,3 +1,4 @@
+
 import prisma from "../lib/prisma.js";
 
 export const findAllVehicles = async () => {
@@ -5,6 +6,11 @@ export const findAllVehicles = async () => {
 };
 
 export const findVehicleById = async (id) => {
+    console.log("A");
+    id = parseInt(id);
+    if (isNaN(id)) {
+        throw new Error("Vehicle ID must be a number");
+    }
     return await prisma.vehicle.findUnique({
         where: { id },
     });
@@ -17,6 +23,11 @@ export const createVehicle = async (data) => {
 };
 
 export const updateVehicle = async (id, data) => {
+    console.log("B");
+    id = parseInt(id);
+    if (isNaN(id)) {
+        throw new Error("Vehicle ID must be a number");
+    }
     return await prisma.vehicle.update({
         where: { id },
         data,
@@ -24,6 +35,11 @@ export const updateVehicle = async (id, data) => {
 };
 
 export const deleteVehicle = async (id) => {
+    console.log("C");
+    id = parseInt(id);
+    if (isNaN(id)) {
+        throw new Error("Vehicle ID must be a number");
+    }
     return await prisma.vehicle.delete({
         where: { id },
     });
@@ -35,15 +51,9 @@ export const findVehiclesByOwnerId = async (ownerId) => {
     });
 };
 
-export const findVehiclesByStatus = async (status) => {
+export const findVehiclesByPlateNumber = async (licensePlate) => {
     return await prisma.vehicle.findMany({
-        where: { status },
-    });
-};
-
-export const findVehiclesByPlateNumber = async (plateNumber) => {
-    return await prisma.vehicle.findMany({
-        where: { plateNumber },
+        where: { licensePlate },
     });
 };
 
@@ -54,6 +64,10 @@ export const findVehiclesByBrand = async (brand) => {
 };
 
 export const findVehicleByYear = async (year) => {
+    year = parseInt(year);
+    if (isNaN(year)) {
+        throw new Error("Year must be a number");
+    }
     return await prisma.vehicle.findMany({
         where: { year },
     });
@@ -61,17 +75,38 @@ export const findVehicleByYear = async (year) => {
 
 export const findVehiclesAvailableForRent = async () => {
     return await prisma.vehicle.findMany({
-        where: { status: "available" },
+        where: { isAvailable: true },
     });
 };
 
-export const findVehicleByPriceRange = async (minPrice, maxPrice) => {
+export const findVehiclesByPrice = async (minPrice, maxPrice, exactPrice) => {
+    const where = {};
+    if (minPrice) {
+        where.pricePerDay = { gte: parseFloat(minPrice) };
+    }
+    if (maxPrice) {
+        where.pricePerDay = { lte: parseFloat(maxPrice) };
+    }
+    if (exactPrice) {
+        where.pricePerDay = parseFloat(exactPrice);
+    }
+    return await prisma.vehicle.findMany({
+        where,
+    });
+};
+
+export const findVehiclesByType = async (type) => {
+    return await prisma.vehicle.findMany({
+        where: { type },
+    });
+}
+
+export const findVehiclesByName = async (name) => {
     return await prisma.vehicle.findMany({
         where: {
-            price: {
-                gte: minPrice,
-                lte: maxPrice,
+            name: {
+                contains: name
             },
         },
     });
-};
+}

@@ -11,10 +11,11 @@ export const vehicleSchema = Joi.object({
         .required(),
     isAvailable: Joi.boolean().default(true),
     pricePerDay: Joi.number().positive().required(),
+    type: Joi.string().valid("car", "motorcycle").required()
 });
 
 export const updateVehicleSchema = vehicleSchema.fork(
-    ["name", "licensePlate", "brand", "year", "isAvailable", "pricePerDay"],
+    ["name", "licensePlate", "brand", "year", "isAvailable", "pricePerDay", "type"],
     (field) => field.optional()
 );
 
@@ -27,20 +28,29 @@ export const findVehiclesByOwnerIdSchema = Joi.object({
 });
 
 export const findVehiclesByStatusSchema = Joi.object({
-    status: Joi.string().valid("available", "rented").required(),
+    isAvailable: Joi.boolean().required(),  
 });
 
 export const findVehiclesByPlateNumberSchema = Joi.object({
     plateNumber: Joi.string().required(),
 });
 
-export const findVehiclesByPriceRangeSchema = Joi.object({
-    minPrice: Joi.number().positive().required(),
-    maxPrice: Joi.number().positive().required(),
-});
-
-export const findVehiclesAvailableForRentSchema = Joi.object({
-    isAvailable: Joi.boolean().default(true),
+export const priceFilterSchema = Joi.object({
+    minPrice: Joi.number().positive().optional(),
+    maxPrice: Joi.number().positive().optional(),
+    exactPrice: Joi.number().positive().optional()
+}).custom((value, helpers) => {
+    // At least one price filter required
+    if (!value.minPrice && !value.maxPrice && !value.exactPrice) {
+        return helpers.message('At least one price filter (minPrice, maxPrice, or exactPrice) is required');
+    }
+    
+    // exactPrice cannot be combined with range
+    if (value.exactPrice && (value.minPrice || value.maxPrice)) {
+        return helpers.message('exactPrice cannot be combined with minPrice or maxPrice');
+    }
+    
+    return value;
 });
 
 export const findVehiclesByYearSchema = Joi.object({
@@ -53,4 +63,12 @@ export const findVehiclesByYearSchema = Joi.object({
 
 export const findVehiclesByBrandSchema = Joi.object({
     brand: Joi.string().min(1).required(),
+});
+
+export const findVehiclesByTypeSchema = Joi.object({
+    type: Joi.string().valid("car", "motorcycle").required(),
+});
+
+export const findVehiclesByNameSchema = Joi.object({
+    name: Joi.string().min(1).required(),
 });

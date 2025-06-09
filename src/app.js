@@ -3,6 +3,7 @@ import cors from "cors";
 import routes from "./routes.js";
 import morgan from "morgan";
 import * as uuid from "uuid";
+import { handleError } from "./models/error.models.js";
 
 const app = express();
 
@@ -38,5 +39,7 @@ app.get("/", (req, res) => {
         version: "1.0.0",
     });
 });
+
+app.use(handleError);
 
 export default app;

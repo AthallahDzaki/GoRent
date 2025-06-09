@@ -20,6 +20,9 @@
     "dev": "node src/server.js --watch",
     "test": "mocha"
   },
+  "prisma" : {
+    "seed" : "node prisma/seed/userSeed.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AthallahDzaki/GoRent.git"

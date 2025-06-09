@@ -6,15 +6,14 @@ import express from "express";
 import userRoutes from "./routes/user.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import vehicleRoutes from "./routes/vehicle.routes.js";
+import rentalRoutes from "./routes/rental.routes.js";
 // End of imports
 
 const router = express.Router();
 
 router.use("/users", userRoutes);
 router.use("/auth", authRoutes);
-router.use("/vehicle", vehicleRoutes);
-router.use("/rental", (req, res) => {
-    res.status(501).json({ message: "Rentals API not implemented yet" });
-});
+router.use("/vehicles", vehicleRoutes);
+router.use("/rentals", rentalRoutes);
 export default router;
 //**

@@ -2,11 +2,11 @@ GoRent/
 ├── src/
 │   ├── routes/            # File routing Express
 │   ├── controllers/       # Fungsi-fungsi untuk menangani request
-│   ├── services/          # Logika bisnis utama
+│   ├── models/            # Logika bisnis dan interaksi dengan database
 │   ├── middlewares/       # Middleware auth, logger, errorHandler
 │   ├── utils/             # Helper functions (misal: hash, JWT, dll)
 │   ├── validators/        # Validasi input menggunakan Joi
-|   |── routes.js          # Definisi semua route
+│   ├── routes.js          # Definisi semua route
 │   ├── app.js             # Setup Express, middlewares, routes
 │   └── server.js          # Entry point (jalankan app.listen)
 ├── prisma/                # Skema Prisma dan migrasi

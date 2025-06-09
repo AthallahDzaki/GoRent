@@ -1,72 +1,72 @@
+import express from "express";
 import { isAdmin, isAuthenticate } from "../middlewares/auth.middleware.js";
-import validateBody from "../middlewares/validateBody.middleware.js";
-
+import { validateBody, validateParams, validateQuery } from "../middlewares/validator.middleware.js";
 import * as VehicleController from "../controllers/vehicle.controller.js";
 import * as VehicleValidator from "../validators/vehicle.validator.js";
-import express from "express";
-import { deleteVehicle } from "../services/vehicle.service.js";
 
 const router = express.Router();
 
+// Vehicle CRUD operations
+router.get("/", [isAuthenticate, isAdmin], VehicleController.getAllVehicles);
 router.post(
     "/",
     [isAuthenticate, isAdmin, validateBody(VehicleValidator.vehicleSchema)],
     VehicleController.createVehicle
+);
+
+// Vehicle search/filter operations (routes spesifik)
+router.get(
+    "/plate/:plateNumber",
+    [isAuthenticate, isAdmin, validateParams(VehicleValidator.findVehiclesByPlateNumberSchema)],
+    VehicleController.getVehiclesByPlateNumber
+);
+router.get("/available", [isAuthenticate], VehicleController.getVehiclesAvailableForRent);
+router.get(
+    "/type/:type",
+    [isAuthenticate, validateParams(VehicleValidator.findVehiclesByTypeSchema)],
+    VehicleController.getVehiclesByType
+);
+router.get(
+    "/name/:name",
+    [isAuthenticate, validateParams(VehicleValidator.findVehiclesByNameSchema)],
+    VehicleController.getVehiclesByName
+);
+router.get(
+    "/year/:year",
+    [isAuthenticate, validateParams(VehicleValidator.findVehiclesByYearSchema)],
+    VehicleController.getVehiclesByYear
+);
+router.get(
+    "/brand/:brand",
+    [isAuthenticate, validateParams(VehicleValidator.findVehiclesByBrandSchema)],
+    VehicleController.getVehiclesByBrand
+);
+router.get(
+    "/price",
+    [isAuthenticate, validateQuery(VehicleValidator.priceFilterSchema)],
+    VehicleController.getVehiclesByPrice
+);
+
+// Routes dengan parameter umum (letakkan di AKHIR)
+router.get(
+    "/:id",
+    [isAuthenticate, isAdmin, validateParams(VehicleValidator.findVehicleByIdSchema)],
+    VehicleController.getVehicleById
 );
 router.put(
     "/:id",
     [isAuthenticate, isAdmin, validateBody(VehicleValidator.updateVehicleSchema)],
     VehicleController.updateVehicle
 );
-router.delete("/:id", [isAuthenticate, isAdmin], deleteVehicle);
 router.patch(
     "/:id",
     [isAuthenticate, isAdmin, validateBody(VehicleValidator.updateVehicleSchema)],
     VehicleController.updateVehicle
 );
-
-1;
-router.get("/", [isAuthenticate, isAdmin], VehicleController.getAllVehicles);
-router.get(
-    "/owner/:ownerId",
-    [isAuthenticate, isAdmin, validateBody(VehicleValidator.findVehiclesByOwnerIdSchema)],
-    VehicleController.getVehiclesByOwnerId
-);
-router.get(
-    "/status/:status",
-    [isAuthenticate, isAdmin, validateBody(VehicleValidator.findVehiclesByStatusSchema)],
-    VehicleController.getVehiclesByStatus
-);
-router.get(
-    "/plate/:plateNumber",
-    [isAuthenticate, isAdmin, validateBody(VehicleValidator.findVehiclesByPlateNumberSchema)],
-    VehicleController.getVehiclesByPlateNumber
-);
-
-router.get(
+router.delete(
     "/:id",
-    [isAuthenticate, validateBody(VehicleValidator.findVehicleByIdSchema)],
-    VehicleController.getVehicleById
-);
-router.get(
-    "/price",
-    [isAuthenticate, validateBody(VehicleValidator.findVehiclesByPriceRangeSchema)],
-    VehicleController.getVehiclesByPriceRange
-);
-router.get(
-    "/available",
-    [isAuthenticate, validateBody(VehicleValidator.findVehiclesAvailableForRentSchema)],
-    VehicleController.getVehiclesAvailableForRent
-);
-router.get(
-    "/year/:year",
-    [isAuthenticate, validateBody(VehicleValidator.findVehiclesByYearSchema)],
-    VehicleController.getVehiclesByYear
-);
-router.get(
-    "/brand/:brand",
-    [isAuthenticate, validateBody(VehicleValidator.findVehiclesByBrandSchema)],
-    VehicleController.getVehiclesByBrand
+    [isAuthenticate, isAdmin, validateParams(VehicleValidator.findVehicleByIdSchema)],
+    VehicleController.deleteVehicle
 );
 
 export default router;

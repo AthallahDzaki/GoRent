@@ -1,40 +1,82 @@
-import { register, login, refreshAccessToken } from '../services/auth.service.js';
+import bcrypt from "bcryptjs";
+import prisma from "../lib/prisma.js";
+import { generateToken } from "../utils/jwt.js";
 
 export const registerUser = async (req, res) => {
-  try {
-    const data = req.body;
-    const result = await register(data);
-    res.status(201).json(result);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+    try {
+        const { name, email, password } = req.body;
+        const existing = await prisma.user.findUnique({ where: { email } });
+        if (existing) throw new Error("Email already registered");
+
+        const hash = await bcrypt.hash(password, 10);
+        const user = await prisma.user.create({
+            data: { name, email, password: hash },
+        });
+
+        const token = await generateToken({
+            id: user.id,
+            email: user.email,
+            role: user.role,
+        });
+
+        res.json({
+            status: true,
+            message: "Registration successful",
+            data: {
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                },
+                token
+            },
+        });
+    } catch (err) {
+        res.status(400).json({ status: "failed", errors: [err.message] });
+    }
 };
 
 export const loginUser = async (req, res) => {
-  try {
-    const data = req.body;
-    const result = await login(data);
-    res.json(result);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+    try {
+        const { email, password } = req.body;
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) throw new Error("email not found");
+        if (!user.password) throw new Error("User has no password set");
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) throw new Error("Wrong password");
+        const token = await generateToken({
+            id: user.id,
+            email: user.email,
+            role: user.role,
+        });
+        res.json({
+            status: true,
+            message: "Login successful",
+            data: {
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                },
+                token
+            },
+        });
+    } catch (err) {
+        res.status(400).json({ status: "failed", errors: [err.message] });
+    }
 };
 
 export const logoutUser = async (req, res) => {
-  try {
-    // Implementasi logout (blacklist token)
-    res.json({ message: 'Logged out successfully' });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
-
-export const refreshToken = async (req, res) => {
-  try {
-    const { refreshToken } = req.body;
-    const result = await refreshAccessToken(refreshToken);
-    res.json(result);
-  } catch (err) {
-    res.status(401).json({ error: err.message });
-  }
+    try {
+        // Implementasi logout (blacklist token)
+        res.json({
+            status: true,
+            message: "Logged out successfully",
+            data: null,
+        });
+    } catch (err) {
+        res.status(400).json({ status: "failed", errors: [err.message] });
+    }
 };

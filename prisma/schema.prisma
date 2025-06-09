@@ -8,14 +8,16 @@ datasource db {
 }
 
 model payment {
-  id       Int            @id @default(autoincrement())
-  rentalId Int
-  method   payment_method
-  amount   Float
-  paidAt   DateTime
-  rental   rental         @relation(fields: [rentalId], references: [id], map: "Payment_rentalId_fkey")
+  id        Int            @id @default(autoincrement())
+  rentalId  Int
+  method    payment_method
+  amount    Float
+  paidAt    DateTime?
+  status    payment_status @default(pending)
+  createdAt DateTime       @default(now())
+  rental    rental         @relation(fields: [rentalId], references: [id])
 
-  @@index([rentalId], map: "Payment_rentalId_fkey")
+  @@index([rentalId])
 }
 
 model rental {
@@ -25,30 +27,32 @@ model rental {
   startDate  DateTime
   endDate    DateTime
   totalPrice Float
-  status     rental_status
+  status     rental_status @default(booked)
   createdAt  DateTime      @default(now())
   payment    payment[]
-  user       user          @relation(fields: [userId], references: [id], map: "Rental_userId_fkey")
-  vehicle    vehicle       @relation(fields: [vehicleId], references: [id], map: "Rental_vehicleId_fkey")
+  user       user          @relation(fields: [userId], references: [id])
+  vehicle    vehicle       @relation(fields: [vehicleId], references: [id])
 
-  @@index([userId], map: "Rental_userId_fkey")
-  @@index([vehicleId], map: "Rental_vehicleId_fkey")
+  @@index([userId])
+  @@index([vehicleId])
 }
 
 model user {
-  id        Int       @id @default(autoincrement())
-  name      String
-  email     String    @unique(map: "User_email_key")
-  password  String
-  role      user_role @default(customer)
-  createdAt DateTime  @default(now())
-  rental    rental[]
+  id               Int       @id @default(autoincrement())
+  name             String
+  email            String    @unique
+  password         String
+  role             user_role @default(customer)
+  createdAt        DateTime  @default(now())
+  userToken        String    @default("") @db.Text
+  rental           rental[]
 }
 
 model vehicle {
   id           Int          @id @default(autoincrement())
   name         String
-  licensePlate String       @unique(map: "Vehicle_licensePlate_key")
+  type         vehicle_type
+  licensePlate String       @unique
   brand        String
   year         Int
   isAvailable  Boolean      @default(true)
@@ -73,4 +77,15 @@ enum rental_status {
   ongoing
   completed
   cancelled
+}
+
+enum payment_status {
+  pending
+  completed
+  failed
+}
+
+enum vehicle_type {
+  car
+  motorcycle
 }

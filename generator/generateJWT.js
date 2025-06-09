@@ -23,7 +23,6 @@ if (process.argv.length > 2) {
 console.log('Generating JWT Secret with length:', length);
 
 const secret = generateJWTSecret(length);
-const refreshSecret = generateJWTSecret(length);
 // Find .env file in your project root directory
 let envFilePath = './.env';
 if (fs.existsSync(envFilePath)) {
@@ -38,19 +37,9 @@ if (fs.existsSync(envFilePath)) {
         console.log('Adding JWT_SECRET to .env file.');
         fs.appendFileSync(envFilePath, `\nJWT_SECRET="${secret}"\n`, 'utf8');
     }
-
-    if (envFileContent.includes('JWT_REFRESH_SECRET=')) {
-        console.log('JWT_REFRESH_SECRET already exists in .env file. Updating it.');
-        envFileContent = envFileContent.replace(/JWT_REFRESH_SECRET=.*/, `JWT_REFRESH_SECRET="${refreshSecret}"`);
-        fs.writeFileSync(envFilePath, envFileContent, 'utf8');
-    } else {
-        console.log('Adding JWT_REFRESH_SECRET to .env file.');
-        fs.appendFileSync(envFilePath, `JWT_REFRESH_SECRET="${refreshSecret}"\n`, 'utf8');
-    }
 } else {
     console.log(`No .env file found. Please create one and add the JWT_SECRET variable.`);
     process.exit(1);
 }
 
 console.log('Your random JWT Secret:', secret);
-console.log('Your random JWT Refresh Secret:', refreshSecret);

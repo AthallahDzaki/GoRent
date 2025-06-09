@@ -19,8 +19,8 @@ GoRent adalah sebuah REST API yang dirancang untuk memudahkan proses penyewaan k
 
 ## Progress
 
-- [ ] Autentikasi Pengguna
-- [ ] Pencarian Kendaraan
+- [x] Autentikasi Pengguna
+- [x] Pencarian Kendaraan
 - [ ] Pemesanan Kendaraan
 - [ ] Manajemen Penyewaan
 - [ ] Dokumentasi API

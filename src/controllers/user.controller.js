@@ -1,4 +1,4 @@
-import * as UserService from '../services/user.service.js'
+import * as UserService from '../models/user.models.js'
 
 export const getAllUsers = async (req, res) => {
   const users = await UserService.findAll()
@@ -10,7 +10,7 @@ export const getUserProfile = async (req, res) => {
   const user = await UserService.findById(userId);
   
   if (!user) {
-    return res.status(404).json({ error: 'User not found' });
+    return res.status(404).json({ status : "failed", errors: ['User not found'] });
   }
   
   res.json(user);
