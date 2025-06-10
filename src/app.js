@@ -3,7 +3,13 @@ import cors from "cors";
 import routes from "./routes.js";
 import morgan from "morgan";
 import * as uuid from "uuid";
+import swaggerUi from "swagger-ui-express";
 import { handleError } from "./models/error.models.js";
+import dotenv from "dotenv";
+
+import document from "../docs/swagger-ui.json" with { type: "json" };
+
+dotenv.config();
 
 const app = express();
 
@@ -32,6 +38,14 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(document, {
+        explorer: true,
+        
+    })
+);
 app.use("/api", routes);
 app.get("/", (req, res) => {
     res.json({

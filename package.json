@@ -8,6 +8,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.0"
   },
   "name": "gorent",
@@ -20,8 +21,8 @@
     "dev": "node src/server.js --watch",
     "test": "mocha"
   },
-  "prisma" : {
-    "seed" : "node prisma/seed/userSeed.js"
+  "prisma": {
+    "seed": "node prisma/seed/userSeed.js"
   },
   "repository": {
     "type": "git",

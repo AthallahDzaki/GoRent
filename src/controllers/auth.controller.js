@@ -29,7 +29,7 @@ export const registerUser = async (req, res) => {
                     email: user.email,
                     role: user.role,
                 },
-                token
+                token,
             },
         });
     } catch (err) {
@@ -60,7 +60,7 @@ export const loginUser = async (req, res) => {
                     email: user.email,
                     role: user.role,
                 },
-                token
+                token,
             },
         });
     } catch (err) {
@@ -70,7 +70,17 @@ export const loginUser = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
     try {
-        // Implementasi logout (blacklist token)
+        console.log("Logging out user:", req.user);
+        const user = req.user;
+        if (!user) throw new Error("User not authenticated");
+        // Clear user token in the database
+        if (!user.id) throw new Error("User ID not found");
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { userToken: null },
+        });
+        req.user = null; // Clear user from request
+
         res.json({
             status: true,
             message: "Logged out successfully",

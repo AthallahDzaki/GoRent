@@ -1,4 +1,4 @@
-import prisma from '../lib/prisma.js';
+import prisma from "../lib/prisma.js";
 
 // Create rental
 export const createRental = async (data) => {
@@ -13,18 +13,18 @@ export const findAllRentals = async () => {
                 select: {
                     id: true,
                     name: true,
-                    email: true
-                }
+                    email: true,
+                },
             },
             vehicle: {
                 select: {
                     id: true,
                     name: true,
                     brand: true,
-                    licensePlate: true
-                }
-            }
-        }
+                    licensePlate: true,
+                },
+            },
+        },
     });
 };
 
@@ -33,7 +33,7 @@ export const findRentalById = async (id) => {
     id = parseInt(id);
     if (isNaN(id)) {
         throw new Error("Rental ID must be a number");
-    }   
+    }
     return await prisma.rental.findUnique({
         where: { id },
         include: {
@@ -41,18 +41,18 @@ export const findRentalById = async (id) => {
                 select: {
                     id: true,
                     name: true,
-                    email: true
-                }
+                    email: true,
+                },
             },
             vehicle: {
                 select: {
                     id: true,
                     name: true,
                     brand: true,
-                    licensePlate: true
-                }
-            }
-        }
+                    licensePlate: true,
+                },
+            },
+        },
     });
 };
 
@@ -70,10 +70,10 @@ export const findRentalsByUserId = async (userId) => {
                     id: true,
                     name: true,
                     brand: true,
-                    licensePlate: true
-                }
-            }
-        }
+                    licensePlate: true,
+                },
+            },
+        },
     });
 };
 
@@ -85,7 +85,7 @@ export const updateRental = async (id, data) => {
     }
     return await prisma.rental.update({
         where: { id },
-        data
+        data,
     });
 };
 
@@ -97,7 +97,7 @@ export const updateRentalStatus = async (id, status) => {
     }
     return await prisma.rental.update({
         where: { id },
-        data: { status }
+        data: { status },
     });
 };
 
@@ -108,7 +108,7 @@ export const deleteRental = async (id) => {
         throw new Error("Rental ID must be a number");
     }
     return await prisma.rental.delete({
-        where: { id }
+        where: { id },
     });
 };
 
@@ -121,17 +121,36 @@ export const findRentalsByStatus = async (status) => {
                 select: {
                     id: true,
                     name: true,
-                    email: true
-                }
+                    email: true,
+                },
             },
             vehicle: {
                 select: {
                     id: true,
                     name: true,
                     brand: true,
-                    licensePlate: true
-                }
-            }
-        }
+                    licensePlate: true,
+                },
+            },
+        },
+    });
+};
+
+export const findRentalsByVehicleId = async (vehicleId) => {
+    vehicleId = parseInt(vehicleId);
+    if (isNaN(vehicleId)) {
+        throw new Error("Vehicle ID must be a number");
+    }
+    return await prisma.rental.findMany({
+        where: { vehicleId },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                },
+            },
+        },
     });
 };

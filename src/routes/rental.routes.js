@@ -35,12 +35,6 @@ router.put(
     [isAuthenticate, isAdmin, validateBody(RentalValidator.updateRentalSchema)],
     RentalController.updateRental
 );
-router.patch(
-    "/:id",
-    [isAuthenticate, isAdmin, validateBody(RentalValidator.updateRentalSchema)],
-    RentalController.updateRental
-);
-router.put("/:id/status", [isAuthenticate, isAdmin], RentalController.updateRentalStatus);
 router.delete("/:id", [isAuthenticate, isAdmin], RentalController.cancelRental);
 
 export default router;

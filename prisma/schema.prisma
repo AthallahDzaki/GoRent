@@ -44,7 +44,7 @@ model user {
   password         String
   role             user_role @default(customer)
   createdAt        DateTime  @default(now())
-  userToken        String    @default("") @db.Text
+  userToken        String?   @db.Text
   rental           rental[]
 }
 

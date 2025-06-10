@@ -1,6 +1,10 @@
 import express from "express";
 import { isAdmin, isAuthenticate } from "../middlewares/auth.middleware.js";
-import { validateBody, validateParams, validateQuery } from "../middlewares/validator.middleware.js";
+import {
+    validateBody,
+    validateParams,
+    validateQuery,
+} from "../middlewares/validator.middleware.js";
 import * as VehicleController from "../controllers/vehicle.controller.js";
 import * as VehicleValidator from "../validators/vehicle.validator.js";
 
@@ -47,18 +51,12 @@ router.get(
     VehicleController.getVehiclesByPrice
 );
 
-// Routes dengan parameter umum (letakkan di AKHIR)
 router.get(
     "/:id",
     [isAuthenticate, isAdmin, validateParams(VehicleValidator.findVehicleByIdSchema)],
     VehicleController.getVehicleById
 );
 router.put(
-    "/:id",
-    [isAuthenticate, isAdmin, validateBody(VehicleValidator.updateVehicleSchema)],
-    VehicleController.updateVehicle
-);
-router.patch(
     "/:id",
     [isAuthenticate, isAdmin, validateBody(VehicleValidator.updateVehicleSchema)],
     VehicleController.updateVehicle
