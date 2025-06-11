@@ -87,6 +87,11 @@
                         "enum": ["car", "motorcycle"],
                         "example": "car"
                     },
+                    "status": {
+                        "type": "string",
+                        "enum": ["available", "rented", "maintenance", "booked", "unavailable"],
+                        "example": "available"
+                    },
                     "createdAt": {
                         "type": "string",
                         "format": "date-time"

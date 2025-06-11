@@ -75,7 +75,7 @@ export const findVehicleByYear = async (year) => {
 
 export const findVehiclesAvailableForRent = async () => {
     return await prisma.vehicle.findMany({
-        where: { isAvailable: true },
+        where: { isAvailable: true, status: "available" }
     });
 };
 

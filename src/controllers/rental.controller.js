@@ -15,7 +15,7 @@ export const rentVehicle = async (req, res, next) => {
             if (!vehicle) {
                 throw new ErrorHandler(404, "Vehicle not found");
             }
-            if (!vehicle.isAvailable) {
+            if (!vehicle.isAvailable || vehicle.status !== "available") {
                 throw new ErrorHandler(400, "Vehicle is not available for rent");
             }
 
@@ -40,7 +40,7 @@ export const rentVehicle = async (req, res, next) => {
             // Update vehicle availability
             await tx.vehicle.update({
                 where: { id: parseInt(vehicleId) },
-                data: { isAvailable: false },
+                data: { isAvailable: false, status: "booked" },
             });
 
             // Create payment record
@@ -85,6 +85,12 @@ export const returnVehicle = async (req, res, next) => {
                 throw new ErrorHandler(400, "Vehicle already returned");
             }
 
+            // Check payment status
+            const payment = await paymentModel.findPaymentByRentalId(rentalId);
+            if (!payment || payment.status !== "completed") {
+                throw new ErrorHandler(400, "Payment not completed for this rental");
+            }
+
             // Update rental status
             const updatedRental = await tx.rental.update({
                 where: { id: parseInt(rentalId) },
@@ -94,7 +100,7 @@ export const returnVehicle = async (req, res, next) => {
             // Update vehicle availability
             const updatedVehicle = await tx.vehicle.update({
                 where: { id: rental.vehicleId },
-                data: { isAvailable: true },
+                data: { isAvailable: true, status: "available" },
             });
 
             return { rental: updatedRental, vehicle: updatedVehicle };
@@ -230,56 +236,17 @@ export const cancelRental = async (req, res, next) => {
         // If rental was active, make vehicle available
         const existingRental = await rentModel.findRentalById(id);
         if (existingRental.status === "booked" || existingRental.status === "ongoing") {
-            vehicleModel.updateVehicle(existingRental.vehicleId, { isAvailable: true });
+            vehicleModel.updateVehicle(existingRental.vehicleId, { isAvailable: true, status: "available" });
         }
 
-        paymentModel.updatePayment(id, { status: "cancelled" });
+        const payment = await paymentModel.findPaymentById(existingRental.paymentId);
+        if (payment && payment.status === "pending") {
+            await paymentModel.updatePayment(payment.id, { status: "cancelled" });
+        }
 
         res.json({
             success: true,
             message: "Rental cancelled successfully",
-            data: result,
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const deleteRental = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-
-        // Check if rental exists
-        const existingRental = await rentModel.findRentalById(id);
-        if (!existingRental) {
-            throw new ErrorHandler(404, "Rental not found");
-        }
-
-        const result = await prisma.$transaction(async (tx) => {
-            // Delete related payments first
-            await tx.payment.deleteMany({
-                where: { rentalId: parseInt(id) },
-            });
-
-            // Delete rental
-            const deletedRental = await tx.rental.delete({
-                where: { id: parseInt(id) },
-            });
-
-            // If rental was active, make vehicle available
-            if (existingRental.status === "booked" || existingRental.status === "ongoing") {
-                await tx.vehicle.update({
-                    where: { id: existingRental.vehicleId },
-                    data: { isAvailable: true },
-                });
-            }
-
-            return deletedRental;
-        });
-
-        res.json({
-            success: true,
-            message: "Rental deleted successfully",
             data: result,
         });
     } catch (error) {

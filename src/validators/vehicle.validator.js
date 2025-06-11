@@ -11,7 +11,14 @@ export const vehicleSchema = Joi.object({
         .required(),
     isAvailable: Joi.boolean().default(true),
     pricePerDay: Joi.number().positive().required(),
-    type: Joi.string().valid("car", "motorcycle").required()
+    type: Joi.string().valid("car", "motorcycle").required(),
+    status: Joi.string().valid("available", "rented", "booked", "maintenance", "unavailable").default("available"),
+}).custom((value, helpers) => {
+    // Custom validation logic can be added here if needed
+    if (value.year < 1886 || value.year > new Date().getFullYear()) {
+        return helpers.message('Year must be between 1886 and the current year');
+    }
+    return value;
 });
 
 export const updateVehicleSchema = vehicleSchema.fork(
@@ -25,10 +32,6 @@ export const findVehicleByIdSchema = Joi.object({
 
 export const findVehiclesByOwnerIdSchema = Joi.object({
     ownerId: Joi.string().required(),
-});
-
-export const findVehiclesByStatusSchema = Joi.object({
-    isAvailable: Joi.boolean().required(),  
 });
 
 export const findVehiclesByPlateNumberSchema = Joi.object({

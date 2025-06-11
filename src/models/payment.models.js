@@ -28,3 +28,9 @@ export const deletePayment = async (id) => {
         where: { id },
     });
 };
+
+export const findPaymentByRentalId = async (rentalId) => {
+    return await prisma.payment.findFirst({
+        where: { rentalId },
+    });
+}

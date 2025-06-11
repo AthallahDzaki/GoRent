@@ -55,6 +55,7 @@ model vehicle {
   licensePlate String       @unique
   brand        String
   year         Int
+  status       vehicle_status @default(available)
   isAvailable  Boolean      @default(true)
   pricePerDay  Float
   createdAt    DateTime     @default(now())
@@ -72,6 +73,14 @@ enum user_role {
   admin
 }
 
+enum vehicle_status {
+  available
+  booked
+  rented
+  maintenance
+  unavailable
+}
+
 enum rental_status {
   booked
   ongoing
@@ -82,6 +91,7 @@ enum rental_status {
 enum payment_status {
   pending
   completed
+  cancelled
   failed
 }
 

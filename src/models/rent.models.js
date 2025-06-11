@@ -101,17 +101,6 @@ export const updateRentalStatus = async (id, status) => {
     });
 };
 
-// Delete rental
-export const deleteRental = async (id) => {
-    id = parseInt(id);
-    if (isNaN(id)) {
-        throw new Error("Rental ID must be a number");
-    }
-    return await prisma.rental.delete({
-        where: { id },
-    });
-};
-
 // Find rentals by status
 export const findRentalsByStatus = async (status) => {
     return await prisma.rental.findMany({

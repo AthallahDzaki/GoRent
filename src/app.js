@@ -8,7 +8,6 @@ import { handleError } from "./models/error.models.js";
 import dotenv from "dotenv";
 
 import document from "../docs/swagger-ui.json" with { type: "json" };
-
 dotenv.config();
 
 const app = express();
@@ -25,9 +24,8 @@ const assignId = (req, res, next) => {
 };
 
 app.use(cors());
-app.use(assignId);
-console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === "development") {
+    app.use(assignId);
     app.use(
         morgan(
             ":id :method :url :status :response-time ms - :res[content-length] - :res[content-type] - " +
@@ -43,7 +41,7 @@ app.use(
     swaggerUi.serve,
     swaggerUi.setup(document, {
         explorer: true,
-        
+        customSiteTitle: "GoRent API Documentation"
     })
 );
 app.use("/api", routes);

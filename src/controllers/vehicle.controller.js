@@ -1,4 +1,5 @@
 import * as vehicleModel from "../models/vehicle.models.js";
+import * as rentModel from "../models/rent.models.js";
 import { ErrorHandler } from "../models/error.models.js";
 
 export const getAllVehicles = async (req, res, next) => {
@@ -71,6 +72,18 @@ export const deleteVehicle = async (req, res, next) => {
             throw new ErrorHandler(404, "Vehicle not found");
         }
 
+        // Check if the vehicle is currently rented
+        if (!existingVehicle.isAvailable || existingVehicle.status === "rented" || existingVehicle.status === "booked") {
+            throw new ErrorHandler(400, "Cannot delete a vehicle that is currently rented");
+        }
+
+        // Find any relationship with rentals
+        const rentals = await rentModel.findRentalsByVehicleId(req.params.id);
+        if (rentals && rentals.length > 0) {
+            throw new ErrorHandler(400, "Cannot delete a vehicle that previously had rentals");
+        }
+
+        // Proceed to delete the vehicle
         await vehicleModel.deleteVehicle(req.params.id);
         res.json({
             success: true,
@@ -290,59 +303,6 @@ export const getVehiclesByName = async (req, res, next) => {
             success: true,
             message: "Vehicles fetched successfully",
             data: vehicles,
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const searchVehicles = async (req, res, next) => {
-    try {
-        const {
-            brand,
-            type,
-            year,
-            minPrice,
-            maxPrice,
-            isAvailable,
-            name,
-            page = 1,
-            limit = 10,
-            sortBy = "createdAt",
-            sortOrder = "desc",
-        } = req.query;
-
-        // Build where clause
-        const where = {};
-
-        if (brand) where.brand = { contains: brand, mode: "insensitive" };
-        if (type) where.type = type.toLowerCase();
-        if (year) where.year = parseInt(year);
-        if (name) where.name = { contains: name, mode: "insensitive" };
-        if (isAvailable !== undefined) where.isAvailable = isAvailable === "true";
-
-        if (minPrice || maxPrice) {
-            where.pricePerDay = {};
-            if (minPrice) where.pricePerDay.gte = parseFloat(minPrice);
-            if (maxPrice) where.pricePerDay.lte = parseFloat(maxPrice);
-        }
-
-        const vehicles = await vehicleModel.searchVehicles(where, {
-            page: parseInt(page),
-            limit: parseInt(limit),
-            sortBy,
-            sortOrder,
-        });
-
-        if (!vehicles.data || vehicles.data.length === 0) {
-            throw new ErrorHandler(404, "No vehicles found matching the criteria");
-        }
-
-        res.json({
-            success: true,
-            message: "Vehicles search completed successfully",
-            data: vehicles.data,
-            pagination: vehicles.pagination,
         });
     } catch (error) {
         next(error);

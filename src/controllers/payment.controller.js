@@ -96,17 +96,25 @@ export const paymentCallback = async (req, res) => {
                 },
             });
 
+            // If payment failed, make vehicle available again
+            if (paymentStatus_internal === "failed") {
+                await tx.vehicle.update({
+                    where: { id: payment.rental.vehicleId },
+                    data: { isAvailable: true, status: "available" },
+                });
+            }
+
             // Update rental status
             const updatedRental = await tx.rental.update({
                 where: { id: payment.rentalId },
                 data: { status: rentalStatus },
             });
 
-            // If payment failed, make vehicle available again
-            if (paymentStatus_internal === "failed") {
+            // If payment is successful, update vehicle availability
+            if (paymentStatus_internal === "completed") {
                 await tx.vehicle.update({
                     where: { id: payment.rental.vehicleId },
-                    data: { isAvailable: true },
+                    data: { isAvailable: false, status: "rented" },
                 });
             }
 
@@ -137,8 +145,6 @@ export const paymentCallback = async (req, res) => {
 
 // Send payment notification
 const sendPaymentNotification = async (userId, paymentData) => {
-    console.log(`Sending payment notification to user ${userId}:`, paymentData);
-
     switch (paymentData.status) {
         case "completed":
             console.log(
