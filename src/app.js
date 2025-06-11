@@ -41,7 +41,8 @@ app.use(
     swaggerUi.serve,
     swaggerUi.setup(document, {
         explorer: true,
-        customSiteTitle: "GoRent API Documentation"
+        customSiteTitle: "GoRent API Documentation",
+        customCss: ".swagger-ui .topbar { display: none }",
     })
 );
 app.use("/api", routes);
